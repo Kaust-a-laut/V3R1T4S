@@ -30,10 +30,13 @@ Expected last line: `PASS` (~10 seconds on a laptop; Python 3 standard library o
 - The table may change after the fetch times above; recheck the cell before relying on it.
 
 ## Credits
-- Found by Kaust-a-laut, with Claude Code (Anthropic) running claude-opus-5-5, using the V3R1T4S kit (https://github.com/elder-plinius/V3R1T4S).
+- Derived from de Heer & Muir's design (no search) by Kaust-a-laut, with Claude Code (Anthropic) running
+  claude-opus-5-5, using the V3R1T4S kit (https://github.com/elder-plinius/V3R1T4S).
 - Built by single-point derivation (rule R7, at minimum-degree point p = 16, degree 2207) from the published
   8735-block (42,13,6) covering design in the La Jolla Covering Repository Zenodo v1.2 archive (contributed by Jan de
   Heer and Steve Muir, 2026-02-28).
+- The live coveringrepository.com (42,13,6) record is 8718 (already so in the 2026-10-15T23:10:40Z fetch, and again
+  at 2026-10-17T00:52:19Z). That is a different design, which we did not examine.
 - The record compared against and the table history: the La Jolla Covering Repository by Daniel M. Gordon
   (https://dmgordon.org/covering-designs/, data https://github.com/dmgordo/LJCR and
   https://doi.org/10.5281/zenodo.10779736), and the Covering Repository (https://coveringrepository.com/), which

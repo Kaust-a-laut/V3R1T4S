@@ -7,6 +7,10 @@
   171741 bytes, sha256 85d2521a14ebaabf6161ab002f4fa41b98c2a5d1892c7dff0dfa4fd8c68c9d17.
 - Fetched again 2026-10-16T02:08:02Z by the NOVELTY panelist (one request), HTTP 200, same size and sha256.
 - Extracted cell (line 3150 of the file, tabs written as [TAB]): `41[TAB]12[TAB]05[TAB]05[TAB][TAB]2244`.
+- Re-fetched 2026-10-17T00:52:19Z (one request), HTTP 200, 171741 bytes, sha256
+  8835258dbca830af29ccd6f38c676cda66816eac60ba94725a015005048ea10b: cell still 2244; (42,13,6) is 8718 in both fetches.
+- Browser check of https://coveringrepository.com/systems.aspx?k=12&t=5&m=5 by Kaust-a-laut on 2026-10-17 (UTC): row
+  41 12 05 05 shows 2.244 blocks (lower bound 1.121), author Terenzio Lazzarotto, date 04/06/2026.
 - Latest (v,k,t) improvements page https://coveringrepository.com/systems.aspx?li=2 fetched 2026-10-16T02:08:03Z by
   NOVELTY (HTTP 200, 173838 bytes): no (41,12,5) entry.
 
