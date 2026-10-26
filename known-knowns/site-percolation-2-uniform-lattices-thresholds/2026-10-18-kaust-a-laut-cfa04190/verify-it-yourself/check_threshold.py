@@ -2,7 +2,8 @@
 only (no numpy, no compiled code).
 
 Checks, in order:
- 1. integrity: the sha256 of every data file listed in the object JSON;
+ 1. integrity: the sha256 of every archive in object/mc/ARCHIVES.sha256 and of every data file listed in the object
+    JSON (the histograms are read from the archives, see how-we-built-it/pack_mc.py);
  2. the lattice: rows S S S T of unit squares (S) and unit triangles (T) built from geometry; at every vertex of a
     period the neighbours at unit distance, the angular gaps between them (60 degrees = a triangle, 90 = a square),
     hence the vertex configuration; the fractions and zbar must be those of Wikipedia's row 23:
@@ -25,16 +26,43 @@ The last line printed is PASS or FAIL.
 
 usage: python check_threshold.py <object folder>
 """
-import glob
 import hashlib
 import json
 import math
 import os
 import re
 import sys
+import tarfile
 from fractions import Fraction
 
 FAILS = []
+MEMBERS = {}                                  # mc/<dataset>/<file> -> bytes, read from the archives
+
+
+def load_archives(obj):
+    """Read every archive listed in object/mc/ARCHIVES.sha256 into MEMBERS; return the archives whose sha256 or
+    members are wrong."""
+    bad, mc = [], os.path.join(obj, "mc")
+    for line in open(os.path.join(mc, "ARCHIVES.sha256")):
+        h, name = line.split(None, 1)
+        path = os.path.join(mc, name.strip())
+        if not os.path.isfile(path) or hashlib.sha256(open(path, "rb").read()).hexdigest() != h:
+            bad.append(name.strip())
+            continue
+        with tarfile.open(path, "r:xz") as t:
+            for m in t.getmembers():
+                if not m.isfile() or not m.name.startswith("mc/") or m.name in MEMBERS:
+                    bad.append("%s: %s" % (name.strip(), m.name))
+                    continue
+                MEMBERS[m.name] = t.extractfile(m).read()
+    return bad
+
+
+def data(obj, f):
+    if f in MEMBERS:
+        return MEMBERS[f]
+    p = os.path.join(obj, f)
+    return open(p, "rb").read() if os.path.isfile(p) else None
 
 
 def check(cond, msg):
@@ -188,11 +216,11 @@ def extrapolate(vals):
 
 # ---------- 4. Monte Carlo crossing and fit ----------
 
-def read_hist(path):
-    with open(path) as f:
-        head = f.readline().split()
-        meta = dict(zip(head[0::2], head[1::2]))
-        rows = [tuple(int(x) for x in line.split()) for line in f if line.strip()]
+def read_hist(name):
+    lines = MEMBERS[name].decode("ascii").splitlines()
+    head = lines[0].split()
+    meta = dict(zip(head[0::2], head[1::2]))
+    rows = [tuple(int(x) for x in line.split()) for line in lines[1:] if line.strip()]
     return meta, rows
 
 
@@ -290,7 +318,7 @@ def crossing(paths):
 
 def mc_fit(folder):
     groups = {}
-    for p in sorted(glob.glob(os.path.join(folder, "*.hist"))):
+    for p in sorted(n for n in MEMBERS if n.startswith(folder + "/") and n.endswith(".hist")):
         m = re.search(r"_L(\d+)x(\d+)_s\d+_b\d+\.hist$", p)
         groups.setdefault((int(m.group(1)), int(m.group(2))), []).append(p)
     rows = []
@@ -324,8 +352,16 @@ def main():
     obj = sys.argv[1]
     J = json.load(open(os.path.join(obj, "threshold_23_site.json")))
     print("== 1 integrity")
-    bad = [f for f, h in J["files"].items() if hashlib.sha256(open(os.path.join(obj, f), "rb").read()).hexdigest() != h]
+    bad = load_archives(obj)
+    check(not bad, "sha256 of the archives in object/mc/ARCHIVES.sha256 (%d problems)" % len(bad))
+    listed = set(f for f in J["files"] if f.startswith("mc/"))
+    check(set(MEMBERS) == listed, "the archives hold exactly the %d histogram files listed in the object (%d held)" % (
+        len(listed), len(MEMBERS)))
+    bad = [f for f, h in J["files"].items() if data(obj, f) is None or hashlib.sha256(data(obj, f)).hexdigest() != h]
     check(not bad, "sha256 of %d data files listed in the object (%d mismatches)" % (len(J["files"]), len(bad)))
+    if FAILS:
+        print("FAIL")
+        sys.exit(1)
     print("== 2 lattice")
     zbar = check_lattice()
     check(float(zbar) == J["lattice"]["zbar"], "stated zbar %s" % J["lattice"]["zbar"])
@@ -341,7 +377,7 @@ def main():
     print("== 4 Monte Carlo (crossing of the wrapping probabilities, jackknife, L2^-4 fit over L2 >= 16)")
     mc = {}
     for key, folder in (("site", "mc/r23_site"), ("bond", "mc/r23_bond"), ("kagome", "mc/kagome_site")):
-        p, s, sizes, blocks = mc_fit(os.path.join(obj, folder))
+        p, s, sizes, blocks = mc_fit(folder)
         mc[key] = (p, s)
         st = J["mc"][key]
         check(abs(p - st["p"]) <= 1e-9 and abs(s - st["sigma"]) <= 0.006 * st["sigma"] and sizes == st["L2"]

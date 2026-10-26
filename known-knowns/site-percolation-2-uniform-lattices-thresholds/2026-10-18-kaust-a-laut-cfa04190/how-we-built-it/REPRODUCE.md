@@ -36,6 +36,8 @@ Expected `p_TM 0.45844602208062  sigma_TM 3.75e-8`. Calibrations of the same rul
 The streamed program gives bit-identical roots (optional, a few minutes): `$PY exact-polynomial/code/test_stream.py`.
 
 ## 4. Method B (Monte Carlo), from the saved histograms - each command a minute or less
+(The histograms are packed in .tar.xz archives; unpack them into timeline-aligner/mc/ first, as RUN_IT_YOURSELF.md
+shows.)
     $PY timeline-aligner/code/agreement.py exact-polynomial/out/r23_site_series.txt timeline-aligner/mc/r23_site 0.5720 2e-4
 Expected: `primary L2>=16     p_MC 0.571766679 +- 0.000001393`, `stability: ... STABLE`, `(a) ... AGREE`, `(b) ... WITHIN`.
     $PY timeline-aligner/code/analyze_mc.py "timeline-aligner/mc/r23_site_check/*.hist"

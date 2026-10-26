@@ -13,8 +13,8 @@ it.
 
 The object: object/threshold_23_site.json (sha256 cfa04190dfd6667063f64bce3c3ac85bf679bed0e6dd4b67dda75229728efadb),
 with the transfer-matrix root series it is extrapolated from (object/tm/) and the Monte Carlo block histograms of
-#23 site, #23 bond and kagome site at every fitted torus size (object/mc/, 1080 files, each listed with its sha256 in
-the JSON). NUMERICAL: the uncertainty of the transfer-matrix value is a convergence spread of a frozen family of
+#23 site, #23 bond and kagome site at every fitted torus size (object/mc/: 1080 files, each listed with its sha256 in
+the JSON, packed in 18 .tar.xz archives, one per lattice and torus size, listed in object/mc/ARCHIVES.sha256). NUMERICAL: the uncertainty of the transfer-matrix value is a convergence spread of a frozen family of
 fits, calibrated on published sequences, not a rigorous bound.
 
 ## Check it yourself
@@ -28,6 +28,12 @@ root series by the frozen rule in exact rational arithmetic, recomputes every Mo
 finite-size fit from the histograms, and checks the criterion's numeric conditions and the claimed value. Its real
 output is in verify-it-yourself/RECEIPTS.md. Recomputing the roots themselves and new Monte Carlo data:
 RUN_IT_YOURSELF.md.
+
+Packaging (2026-10-26, at the maintainer's request in PR #391): the Monte Carlo histograms of object/mc/ and the
+calibration data of how-we-built-it/timeline-aligner/mc/ are packed in .tar.xz archives (how-we-built-it/pack_mc.py),
+so that the package has under 100 files, each under 1 MB. No data changed: every histogram has the sha256 listed in
+object/threshold_23_site.json (unchanged, sha256 cfa04190...), the checker reads them from the archives, and
+verify-it-yourself/unpack_mc.py restores the original folders.
 
 ## Compared to
 | table | cell | table value | this value | URL | fetched (UTC) |

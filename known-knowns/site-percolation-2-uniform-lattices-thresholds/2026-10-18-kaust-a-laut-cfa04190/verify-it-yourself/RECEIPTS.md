@@ -1,9 +1,13 @@
 # Receipts
 
-Real output of `sh verify-it-yourself/run_checks.sh`, run from this folder on 2026-10-18T07:38:46Z (UTC) (Windows, Git Bash, Python 3).
+Real output of `sh verify-it-yourself/run_checks.sh`, run from this folder on 2026-10-26T06:19:08Z (UTC) (Windows, Git Bash, Python 3),
+after the Monte Carlo files were packed into archives (2026-10-26). The earlier run (2026-10-18T07:38:46Z, unpacked
+files) printed the same lines except the two archive checks of section 1, which are new.
 
 ```
 == 1 integrity
+ok    sha256 of the archives in object/mc/ARCHIVES.sha256 (0 problems)
+ok    the archives hold exactly the 1080 histogram files listed in the object (1080 held)
 ok    sha256 of 1082 data files listed in the object (0 mismatches)
 == 2 lattice
 lattice SSST: vertex configurations ['3^3.4^2', '4^4', '4^4', '3^3.4^2'], fractions {'3^3.4^2': '1/2', '4^4': '1/2'}, zbar 9/2
@@ -52,4 +56,4 @@ ok    claimed 0.57176454 +- 0.00000010 equals the TM value rounded
 PASS
 ```
 
-Wall clock: 0m30.524s.
+Wall clock: 0m30.730s.
